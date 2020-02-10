@@ -1,4 +1,4 @@
-Application: Multi-stage DNS Resolving System using Client-Server socket programming
+**Application: Multi-stage DNS Resolving System using Client-Server socket programming**
 
 In this application, you require implementing three C programs, namely Client, Proxy Server (which will act
 both as client and server) and DNS Server, and they communicate with each other based on TCP sockets. The
