@@ -19,7 +19,7 @@ closed gracefully releasing the socket resource.
 
 Request Message Format:
 --------------------------
-|Response_Type | Message |
+|Request_Type | Message |
 --------------------------
 	Type 1: Message field contains Domain Name and requests for corresponding IP address.	
 	Type 2: Message field contains IP address and request for the corresponding Domain Name.
