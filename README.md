@@ -1,4 +1,4 @@
-Application: Multi-stage DNS Resolving System using Client-Server socket programming
+**Application: Multi-stage DNS Resolving System using Client-Server socket programming**
 
 In this application, you require implementing three C programs, namely Client, Proxy Server (which will act
 both as client and server) and DNS Server, and they communicate with each other based on TCP sockets. The
@@ -19,7 +19,7 @@ closed gracefully releasing the socket resource.
 
 Request Message Format:
 --------------------------
-|Response_Type | Message |
+|Request_Type | Message |
 --------------------------
 	Type 1: Message field contains Domain Name and requests for corresponding IP address.	
 	Type 2: Message field contains IP address and request for the corresponding Domain Name.
