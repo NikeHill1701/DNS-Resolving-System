@@ -1,0 +1,8 @@
+8.8.8.8 google.com
+1.1.1.1 aaaa.com
+2.2.2.2 bbbb.com
+1.1.1.3 aaac.com
+1.1.1.4 aaad.com
+1.1.1.5 aaae.com
+1.1.1.6 aaaf.com
+255.255.255.255 qwertyuiopasdf.co.in
