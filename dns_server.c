@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#include<stdio.h>
-#include<sys/socket.h>
-#include<arpa/inet.h>
-#include<unistd.h>
-#include<string.h>
-
-=======
 #include <stdio.h> 
 #include <string.h> 
 #include <unistd.h>
@@ -144,4 +136,3 @@ int main(){
     close(sockfd);
 
 }
->>>>>>> 237241f63ce4e877cbab5652dcd602bf3853b30d
