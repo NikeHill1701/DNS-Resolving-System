@@ -33,8 +33,8 @@ Response Message Format:
 
 Prototype for command line is as follows:
 Prototypes for Client and Server
-<Client:executable_code Server_IP_Address Server_Port_number
- Server:executable_code Server_Port_number>
+#### Client:executable_code Server_IP_Address Server_Port_number
+#### Server:executable_code Server_Port_number
 	
 	
 	
