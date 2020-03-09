@@ -15,7 +15,7 @@ int stoi(char *st){
 int proxy2dns(char buff[], char *p2d_buff)
 {
     int sockfd, server_port;
-    char server_ip[50];
+    char server_ip[256];
     struct sockaddr_in servaddr, client;
     printf("Please input the DNS server IP and Port:\n");
     scanf("%s", server_ip);
@@ -47,10 +47,10 @@ int proxy2dns(char buff[], char *p2d_buff)
     }
     
 
-    send(sockfd, buff, 1024, 0);
+    send(sockfd, buff, 256, 0);
 
-    char recv_buff[10];
-    int len_recv = recv(sockfd, recv_buff, 10, 0);
+    char recv_buff[256];
+    int len_recv = recv(sockfd, recv_buff, sizeof(recv_buff), 0);
     printf("len_recv: %d\n", len_recv);
     if(recv_buff == NULL){
         printf("DNS server did not respond\n");
@@ -62,9 +62,9 @@ int proxy2dns(char buff[], char *p2d_buff)
         FILE *fp;
         fp=fopen("proxy_cache.txt", "r");
         int c=0;
-        char line_buf[1024];
-        memset(line_buf, 0, 1024);
-        while(fgets(line_buf, 1024, fp))
+        char line_buf[256];
+        memset(line_buf, 0, 256);
+        while(fgets(line_buf, 256, fp))
             c++;
         fclose(fp);
         if(c<3)
@@ -73,19 +73,19 @@ int proxy2dns(char buff[], char *p2d_buff)
             char str;
             if(buff[0]=='0')
             {
-                for(int i=1; i<1024 && buff[i]!='\0'; i++)
+                for(int i=1; i<256 && buff[i]!='\0'; i++)
                     fputc(buff[i], fp);
                 fputc(' ', fp);
-                for(int i=1; i<1024 && recv_buff[i]!='\0'; i++)
+                for(int i=1; i<256 && recv_buff[i]!='\0'; i++)
                     fputc(recv_buff[i], fp);
                 fputc('\n', fp);
             }
             else
             {
-                for (int i = 1; i < 1024 && recv_buff[i] != '\0'; i++)
+                for (int i = 1; i < 256 && recv_buff[i] != '\0'; i++)
                     fputc(recv_buff[i], fp);
                 fputc(' ', fp);
-                for (int i = 1; i < 1024 && buff[i] != '\0'; i++)
+                for (int i = 1; i < 256 && buff[i] != '\0'; i++)
                     fputc(buff[i], fp);
                 fputc('\n', fp);
             }
@@ -95,30 +95,30 @@ int proxy2dns(char buff[], char *p2d_buff)
             FILE *fp1, *fpt;
             fp1=fopen("proxy_cache.txt", "r");
             fpt=fopen("temp.txt", "w");
-            char copy_buff[1024];
-            memset(copy_buff, 0, 1024);
-            fgets(copy_buff, 1024, fp1);
+            char copy_buff[256];
+            memset(copy_buff, 0, 256);
+            fgets(copy_buff, 256, fp1);
             while(c-- > 1)
             {
-                fgets(copy_buff, 1024, fp1);
+                fgets(copy_buff, 256, fp1);
                 fprintf(fpt, "%s", copy_buff);
             }
             fclose(fp1);
             if (buff[0] == '0')
             {
-                for (int i = 1; i < 1024 && buff[i] != '\0'; i++)
+                for (int i = 1; i < 256 && buff[i] != '\0'; i++)
                     fputc(buff[i], fpt);
                 fputc(' ', fpt);
-                for (int i = 1; i < 1024 && recv_buff[i] != '\0'; i++)
+                for (int i = 1; i < 256 && recv_buff[i] != '\0'; i++)
                     fputc(recv_buff[i], fpt);
                 fputc('\n', fpt);
             }
             else
             {
-                for (int i = 1; i < 1024 && recv_buff[i] != '\0'; i++)
+                for (int i = 1; i < 256 && recv_buff[i] != '\0'; i++)
                     fputc(recv_buff[i], fpt);
                 fputc(' ', fpt);
-                for (int i = 1; i < 1024 && buff[i] != '\0'; i++)
+                for (int i = 1; i < 256 && buff[i] != '\0'; i++)
                     fputc(buff[i], fpt);
                 fputc('\n', fpt);
             }
@@ -135,10 +135,10 @@ int proxy2dns(char buff[], char *p2d_buff)
 
 int communicate(int sockfd)
 {
-    char buff[1024];
+    char buff[256];
     int n;
     
-    memset(buff, 0, 1024);
+    memset(buff, 0, 256);
     int len_message;
     len_message = recv(sockfd, buff, sizeof(buff), 0);
     printf("Length=%d\n", len_message);
@@ -152,10 +152,10 @@ int communicate(int sockfd)
     {
         printf("File open failed\n");
     }
-    char line_buf[1024];
-    memset(line_buf, 0, 1024);
+    char line_buf[256];
+    memset(line_buf, 0, 256);
     int cache_flag=0;
-    while(fgets(line_buf, 1024, fp))
+    while(fgets(line_buf, 256, fp))
     {
         printf("Line data %s\n", line_buf);
         if(buff[0]=='0')
@@ -219,7 +219,7 @@ int communicate(int sockfd)
     char p2d_buff[30];
     proxy2dns(buff, p2d_buff);
     printf("p2d_buff: %s\n", p2d_buff);
-    send(sockfd, p2d_buff, 1024, 0);
+    send(sockfd, p2d_buff, 256, 0);
     return 0;
 }
 
