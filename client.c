@@ -70,8 +70,8 @@ int main(int argc, char** argv){
     //getmessage(st,0,requestmsg);
     printf("Request msg from client: %s\n", requestmsg);
     send(sockfd,requestmsg,strlen(requestmsg)*sizeof(char),0);
-    char *response;
-    recv(sockfd,response,512,0);
+    char response[20];
+    recv(sockfd,response,20,0);
     printf("Response from server: %s\n", response);
     return 0;
 }
