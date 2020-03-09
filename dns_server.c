@@ -13,25 +13,24 @@
 
 void whattodo(int sockfd){
 	char buffer[MAX];
-	int n;
-	char 
+	int n; 
 	for ( ; ; )
 	{
 		memset(buffer,0,sizeof(buffer));
-		recv(sockfd,buffer,sizeof(buffer));
+		recv(sockfd,buffer,sizeof(buffer),0);
 		printf("proxy server sent %s to server\n",buffer);
 		
 		FILE *fptr;
-  		fptr=fopen("dns.txt","r")
+  		fptr=fopen("dns.txt","r");
   		if(fptr==NULL)
   		{
   			printf("error in opening file\n");
   			exit(1);
   		}
-  		while(fgets())
+  		//while(fgets())
         n = 0; 
         // copy server message in the buffer 
-        while ((buff[n++] = getchar()) != '\n') 
+        while ((buffer[n++] = getchar()) != '\n') 
             ;
 
 
@@ -39,47 +38,47 @@ void whattodo(int sockfd){
   		
   		//if(straight ) limit by space
   		
-  		while(fscanf(fptr,"%[^\n]",file_line)){
-  			char err_msg[1024]="1entry not found in the database\0"
+  			char err_msg[1024]="1entry not found in the database\0";
+      while(fscanf(fptr,"%[^\n]",file_line)){
   			char sip[20]="";
   			char dname[30]="";
-  			char delimiter="\0"
+  			char delimiter='\0';
   			int i,j;
   			for (i = 0; i < 18; i++)
   			{
   				if(file_line[i]==' ')break;
   			}
   			strncat(sip,file_line,i);
-  			strncat(sip,*delimiter,1);
+  			strncat(sip,&delimiter,1);
 
   			for (j = i+1; j <50; j++)
   			{
   				if (file_line[j]=='\n')break;
   			}
 			strncat(dname,file_line+i+1,j-i-1);
-  			strncat(dname,*delimiter,1);  			
+  			strncat(dname,&delimiter,1);  			
   			//ip f[0->i-1] size i
   			//dom f[i+1 -> j-1] size j-i-1
 
-  			if (buff[0]=='0')//requesting IP
+  			if (buffer[0]=='0')//requesting IP
   			{
-  				if(strncmp(file_line+i+1,buff+1,j-i-1)==0)
+  				if(strncmp(file_line+i+1,buffer+1,j-i-1)==0)
   					write(sockfd, sip,100);	
   			}
-  			else if (buff[0]=='1')//requesting dname
+  			else if (buffer[0]=='1')//requesting dname
   			{
-  				if(strncmp(file_line,buff+1,i)==0)
+  				if(strncmp(file_line,buffer+1,i)==0)
   					write(sockfd, dname,100);	
   			}
   			else continue;
   		}
-  		write(sockfd, err_msg,30);
-  		fprintf( "%s\n",file_line );
+  		write(sockfd,err_msg,30);
+  		//fprintf(,"%s\n",file_line );
 
 
   		fclose(fptr);
         // and send that buffer to client 
-        write(sockfd, buff, sizeof(buff));
+       // write(sockfd, buffer, sizeof(buffer));
 
 	}
 }
@@ -106,7 +105,7 @@ int main(){
 
     binded=bind(sockfd,(SA*)&address,sizeof(address));
 
-    if (binded) != 0) { 
+    if (binded != 0) { 
         printf("hold up!socket binding failed bruh!\n"); 
         exit(0); 
     } 
@@ -114,7 +113,7 @@ int main(){
         printf("I renounce socket binded\n");
 
     //ready to listen
-    if (lister(sockfd,5) <0)
+    if (listen(sockfd,5) <0)
     {
     	printf("Socket ain't listening bruh!\n");
     	exit(0);
