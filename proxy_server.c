@@ -4,6 +4,7 @@
 #include<unistd.h>
 #include<string.h>
 
+// Function for converting a string to integer
 int stoi(char *st){
     int x=0, n=strlen(st);
     for(int i=0;i<n;i++){
@@ -12,6 +13,8 @@ int stoi(char *st){
     }
     return x;
 }
+
+//Function for connecting with the DNS Server and updating the Proxy Cache
 int proxy2dns(char buff[], char *p2d_buff)
 {
     int sockfd, server_port;
@@ -20,11 +23,13 @@ int proxy2dns(char buff[], char *p2d_buff)
     printf("Please input the DNS server IP and Port:\n");
     scanf("%s", server_ip);
     scanf("%d", &server_port);
-    printf("Server_ip: %s\tserver_port: %d\n", server_ip, server_port);
+	printf("Server_ip: %s\tserver_port: %d\n", server_ip, server_port);
+
+    //Creating socket
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))<0)
     {
         printf("Error in creating client socket for proxy\n");
-        return -1;
+        return 0;
     }
     else
     {
@@ -36,39 +41,46 @@ int proxy2dns(char buff[], char *p2d_buff)
     servaddr.sin_addr.s_addr=inet_addr(server_ip);
     servaddr.sin_port=htons(server_port);
 
+    // Connecting to the server
     if(connect(sockfd, (struct sockaddr*) &servaddr, sizeof(servaddr))!=0)
     {
         printf("Connection with DNS server failed\n");
-        return -1;
+        return 0;
     }
     else
     {
         printf("Connection with DNS server established\n");
     }
     
-
+    // Forward the cache miss request to the DNS server
     send(sockfd, buff, 256, 0);
 
     char recv_buff[256];
-    int len_recv = recv(sockfd, recv_buff, sizeof(recv_buff), 0);
-    printf("len_recv: %d\n", len_recv);
+    memset(recv_buff, 0, 256);
+    int len_recv = recv(sockfd, recv_buff, 256, 0);
+
+    printf("Response from DNS server: %s\n", recv_buff);
     if(recv_buff == NULL){
         printf("DNS server did not respond\n");
-        return -1;
+        return 0;
     }
+    // Entry found in DNS server, update cache
     if(recv_buff[0]=='0')
     {
-        printf("ok\n");
         FILE *fp;
         fp=fopen("proxy_cache.txt", "r");
         int c=0;
         char line_buf[256];
         memset(line_buf, 0, 256);
+        
+        // Counting the number of entries in cache
         while(fgets(line_buf, 256, fp))
             c++;
         fclose(fp);
+
         if(c<3)
         {
+            // Add the entry to the cache file
             fp=fopen("proxy_cache.txt", "a");
             char str;
             if(buff[0]=='0')
@@ -90,6 +102,7 @@ int proxy2dns(char buff[], char *p2d_buff)
                 fputc('\n', fp);
             }
         }
+        // else use FIFO 
         else
         {
             FILE *fp1, *fpt;
@@ -133,6 +146,7 @@ int proxy2dns(char buff[], char *p2d_buff)
     return 0;
 }
 
+// function that communicates with the client
 int communicate(int sockfd)
 {
     char buff[256];
@@ -141,8 +155,8 @@ int communicate(int sockfd)
     memset(buff, 0, 256);
     int len_message;
     len_message = recv(sockfd, buff, sizeof(buff), 0);
-    printf("Length=%d\n", len_message);
-    printf("Request msg from client: %s\n", buff);
+
+	printf("Request msg from client: %s\n", buff);
     FILE *fp;
     if(fp=fopen("proxy_cache.txt", "r"))
     {
@@ -151,13 +165,13 @@ int communicate(int sockfd)
     else
     {
         printf("File open failed\n");
+        return 0;
     }
     char line_buf[256];
     memset(line_buf, 0, 256);
     int cache_flag=0;
     while(fgets(line_buf, 256, fp))
     {
-        printf("Line data %s\n", line_buf);
         if(buff[0]=='0')
         {
 
@@ -170,20 +184,15 @@ int communicate(int sockfd)
             for(k=j; k<sizeof(line_buf)/sizeof(char); k++)
                 if(line_buf[k]=='\n')
                     break;
-            printf("%d %d\n", j, k);
-            printf("%s%s\n",buff+1,line_buf);
-            printf("%d\n",len_message);
             if(strncmp(buff+1, line_buf, len_message-1) != 0)
             {
-                printf("String comparision failed\n");
                 continue;
             }
-            printf("String comparision successful\n");
             cache_flag=1;
 
             char send_buf[k-j+2];
-            printf("Buffer created successfully\n");
-            send_buf[0]='0';
+
+			send_buf[0]='0';
             for(int itr=j+1; itr<=k; itr++)
                 send_buf[itr-j]=line_buf[itr-1];
             send_buf[k-j+1] = '\0';
@@ -218,8 +227,9 @@ int communicate(int sockfd)
     printf("Proxy cache miss\n");
     char p2d_buff[30];
     proxy2dns(buff, p2d_buff);
-    printf("p2d_buff: %s\n", p2d_buff);
-    send(sockfd, p2d_buff, 256, 0);
+
+	send(sockfd, p2d_buff, 256, 0);
+    close(sockfd);
     return 0;
 }
 
@@ -229,7 +239,7 @@ int main(int argc, char *argv[])
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         printf("Error in creating server socket for proxy\n");
-        return -1;
+        return 0;
     }
     else
     {
@@ -246,7 +256,7 @@ int main(int argc, char *argv[])
     if ((bind(sockfd, (struct sockaddr *)&address, sizeof(address))) < 0)
     {
         printf("Socket bind failed\n");
-        return -1;
+        return 0;
     }
     else
     {
@@ -257,7 +267,7 @@ int main(int argc, char *argv[])
     if ((listen(sockfd, 5)) < 0)
     {
         printf("Listening failed\n");
-        return -1;
+        return 0;
     }
     else
     {
@@ -268,7 +278,7 @@ int main(int argc, char *argv[])
     if ((new_socket = accept(sockfd, (struct sockaddr *)&address, &len)) < 0)
     {
         printf("Server accept failed\n");
-        return -1;
+        return 0;
     }
     else
     {
@@ -277,4 +287,5 @@ int main(int argc, char *argv[])
     
     communicate(new_socket);
     close(sockfd);
+    return 0;
 }
