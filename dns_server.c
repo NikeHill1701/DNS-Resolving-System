@@ -16,7 +16,7 @@ int stoi(char *st){
     return x;
 }
 
-void whatUgonnado(int sockfd){
+int whatUgonnado(int sockfd){
 	char buffer[256];
 	int n; 
 	memset(buffer,0,sizeof(buffer));
@@ -28,7 +28,7 @@ void whatUgonnado(int sockfd){
 	if(fptr == NULL)
 	{
 		printf("error in opening file\n");
-		exit(0);
+		return 0;
 	}
 	else
 	{
@@ -53,7 +53,7 @@ void whatUgonnado(int sockfd){
 		}
 		strncat(sip,file_line,i);
 		strncat(sip,&delimiter,1);
-		printf("%s\n", sip);
+
 		for (j = i+1; j < 256; j++)
 		{
 			if (file_line[j]=='\n')
@@ -61,7 +61,6 @@ void whatUgonnado(int sockfd){
 		}
 		strncat(dname,file_line+i+1,j-i-1);
 		strncat(dname,&delimiter,1);  			
-		printf("%s\n", dname);
 		
 		//ip f[0->i-1] size i
 		//dom f[i+1 -> j-1] size j-i-1
@@ -73,7 +72,7 @@ void whatUgonnado(int sockfd){
 			{
 				printf("Hit! %s\n", sip);
 				int bytes_sent = send(sockfd, sip,strlen(sip)*sizeof(char),0);	
-				printf("bytes sent: %d\n", bytes_sent);
+				//printf("bytes sent: %d\n", bytes_sent);
 				hit = 1;
 				break;
 			}
@@ -84,6 +83,7 @@ void whatUgonnado(int sockfd){
 		{
 			if(strncmp(file_line,buffer+1,i)==0)
 			{
+				printf("matching string= %s\tstrlen_dname= %d\n", dname, (int)strlen(dname));
 				send(sockfd, dname,strlen(dname)*sizeof(char),0);
 				hit = 1;
 				break;
@@ -98,9 +98,10 @@ void whatUgonnado(int sockfd){
 	//fprintf(,"%s\n",file_line );
 
 	fclose(fptr);
+	close(sockfd);
 	// and send that buffer to client 
 	// write(sockfd, buffer, sizeof(buffer));
-
+	return 0;
 }
 
 int main(int argc, char* argv[]){
@@ -112,7 +113,7 @@ int main(int argc, char* argv[]){
     if (sockfd < 0)
     {
     	printf("hold up!socket creation failed bruh:(\n");
-    	exit(0);
+    	return 0;
     } 
 	else
 	{
@@ -128,7 +129,7 @@ int main(int argc, char* argv[]){
 
 	if(bind(sockfd, (SA*) &address, sizeof(address)) < 0) {
         printf("hold up!socket binding failed bruh!\n"); 
-        exit(0); 
+        return 0; 
     } 
     else
 	{
@@ -138,7 +139,7 @@ int main(int argc, char* argv[]){
     if ((listen(sockfd,5)) < 0)
     {
     	printf("Dumbass socket!\n");
-    	exit(0);
+    	return 0;
     }
     else
 	{
@@ -149,7 +150,7 @@ int main(int argc, char* argv[]){
     if (connfd<0)
     {
     	printf("Ah rejection!\n");
-    	exit(0);
+    	return 0;
     }
     else
     	printf("YAY! server accepted client!\n");
@@ -157,5 +158,5 @@ int main(int argc, char* argv[]){
     whatUgonnado(connfd);
 
     close(sockfd);
-
+	return 0;
 }
