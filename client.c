@@ -48,7 +48,7 @@ int main(int argc, char** argv){
     sockfd = socket(AF_INET,SOCK_STREAM,0);
     if(sockfd<0) {
         printf("Error creating socket\n");
-        return -1;
+        return 0;
     } else {
         printf("Socket: 'Hello World'\n");
     }
@@ -56,7 +56,7 @@ int main(int argc, char** argv){
     // establishing connection
     if (connect(sockfd,(struct sockaddr*) &server_addr,sizeof(server_addr)) < 0) {
         printf("Error establishing connection with the server\n");
-        return -1;
+        return 0;
     } else {
         printf("Server:'Hello'\n");
     }
@@ -74,5 +74,6 @@ int main(int argc, char** argv){
     char response[256];
     recv(sockfd,response,sizeof(response),0);
     printf("Response from server: %s\n", response);
+    close(sockfd);
     return 0;
 }
