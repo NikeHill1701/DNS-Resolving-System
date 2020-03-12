@@ -141,6 +141,7 @@ int proxy2dns(char buff[], char *p2d_buff)
         }
     }
     printf("Response from DNS server: %s\n", recv_buff);
+    // terminate connection with the DNS server
     close(sockfd);
     strcpy(p2d_buff, recv_buff);
     return 0;
@@ -149,33 +150,37 @@ int proxy2dns(char buff[], char *p2d_buff)
 // function that communicates with the client
 int communicate(int sockfd)
 {
-    printf("OK\n");
     char buff[256];
     int n;
     
     memset(buff, 0, 256);
     int len_message;
+    // recieve message from the client
     len_message = recv(sockfd, buff, sizeof(buff), 0);
 
 	printf("Request msg from client: %s\n", buff);
     FILE *fp;
     if(fp=fopen("proxy_cache.txt", "r"))
     {
-        printf("File open successful\n");
+        printf("cache file open successful\n");
     }
     else
     {
-        printf("File open failed\n");
+        printf("cache file open failed\n");
         return 0;
     }
     char line_buf[256];
     memset(line_buf, 0, 256);
+
+    // flag indication cache miss/hit
     int cache_flag=0;
+    
+    // iterate over the lines in the cache file
     while(fgets(line_buf, 256, fp))
     {
+        // if request of type 0 ie requesting the ip_addr
         if(buff[0]=='0')
         {
-
             int i;
             for(i=0; i<sizeof(line_buf)/sizeof(char); i++)
                 if(line_buf[i]==' ')
@@ -198,6 +203,7 @@ int communicate(int sockfd)
                 send_buf[itr-j]=line_buf[itr-1];
             send_buf[k-j+1] = '\0';
             printf("Response to client: %s\n", send_buf);
+            // send the requested data to the client using sockfd
             send(sockfd, send_buf, sizeof(send_buf), 0);
             break;
         }
@@ -227,8 +233,10 @@ int communicate(int sockfd)
         return 0;
     printf("Proxy cache miss\n");
     char p2d_buff[30];
+    // contact the DNS server
     proxy2dns(buff, p2d_buff);
 
+    // forward the response from DNS server
 	send(sockfd, p2d_buff, 256, 0);
     close(sockfd);
     return 0;
@@ -287,9 +295,12 @@ int main(int argc, char *argv[])
         {
             printf("Connection accpeted from client\n");
         }
-    
+        // function that takes care of further communication
         communicate(new_socket);
     }
+
+    // free the socket
     close(sockfd);
+    
     return 0;
 }
