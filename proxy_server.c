@@ -149,6 +149,7 @@ int proxy2dns(char buff[], char *p2d_buff)
 // function that communicates with the client
 int communicate(int sockfd)
 {
+    printf("OK\n");
     char buff[256];
     int n;
     
@@ -275,17 +276,20 @@ int main(int argc, char *argv[])
     }
     
     int len = sizeof(address);
-    if ((new_socket = accept(sockfd, (struct sockaddr *)&address, &len)) < 0)
+    while (1)
     {
-        printf("Server accept failed\n");
-        return 0;
-    }
-    else
-    {
-        printf("Connection accpeted from client\n");
-    }
+        if ((new_socket = accept(sockfd, (struct sockaddr *)&address, &len)) < 0)
+        {
+            printf("Server accept failed\n");
+            continue;
+        }
+        else
+        {
+            printf("Connection accpeted from client\n");
+        }
     
-    communicate(new_socket);
+        communicate(new_socket);
+    }
     close(sockfd);
     return 0;
 }

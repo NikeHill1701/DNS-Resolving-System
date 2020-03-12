@@ -37,7 +37,6 @@ int whatUgonnado(int sockfd){
 
 	char file_line[256];
 	
-	//if(straight ) limit by space
 	int hit = 0;
 	char err_msg[256]="1entry not found in the database\0";
 
@@ -146,16 +145,19 @@ int main(int argc, char* argv[]){
     	printf("Socket's all ears\n");
 	}
 	int length = sizeof(address);
-    connfd = accept(sockfd,(SA*)&address,&length);
-    if (connfd<0)
-    {
-    	printf("Ah rejection!\n");
-    	return 0;
-    }
-    else
-    	printf("YAY! server accepted client!\n");
+	while (1)
+	{
+		connfd = accept(sockfd,(SA*)&address,&length);
+    	if (connfd<0)
+    	{
+    		printf("Ah rejection!\n");
+    		continue;
+    	}
+    	else
+    		printf("YAY! server accepted client!\n");
 
-    whatUgonnado(connfd);
+    	whatUgonnado(connfd);
+	}
 
     close(sockfd);
 	return 0;
