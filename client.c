@@ -6,6 +6,7 @@
 #define PORT 8080
 #define MAX_LIMIT 50
 
+// function to convert string to integer
 int stoi(char *st){
     int x=0, n=strlen(st);
     for(int i=0;i<n;i++){
@@ -15,6 +16,7 @@ int stoi(char *st){
     return x;
 }
 
+// function that trims "www" infront of a url
 void getmessage(char st[], int flag, char *dst){
     int n=strlen(st);
     dst[0] = '0'+flag;
@@ -26,6 +28,7 @@ void getmessage(char st[], int flag, char *dst){
     }
     return;
 }
+
 
 int main(int argc, char** argv){
 
@@ -57,14 +60,15 @@ int main(int argc, char** argv){
     if (connect(sockfd,(struct sockaddr*) &server_addr,sizeof(server_addr)) < 0) {
         printf("Error establishing connection with the server\n");
         return 0;
-    } else {
+    } 
+    else {
         printf("Server:'Hello'\n");
     }
     char requestmsg[256], st[256]; 
     int flag;
 
     // Input dns request message
-    printf("Requesting input\n");
+    printf("Requesting input: request and type of request\n");
     scanf("%s %d", st, &flag);
 
     getmessage(st,flag,requestmsg);
@@ -74,6 +78,10 @@ int main(int argc, char** argv){
     char response[256];
     recv(sockfd,response,sizeof(response),0);
     printf("Response from server: %s\n", response);
+    printf("The requested data: %s\n", response+1);
+    
+    // free the socket
     close(sockfd);
+    
     return 0;
 }
