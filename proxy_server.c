@@ -284,7 +284,7 @@ int main(int argc, char *argv[])
     }
     
     int len = sizeof(address);
-
+    int count = 0; 
     listen:
     if ((new_socket = accept(sockfd, (struct sockaddr *)&address, &len)) < 0)
     {
@@ -292,7 +292,8 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("Connection accpeted from client\n");
+        count++;
+        printf("Connection #%d accpeted from client\n", count);
     }
     // function thread that takes care of further communication
     int pid = fork();
