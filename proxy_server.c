@@ -284,21 +284,26 @@ int main(int argc, char *argv[])
     }
     
     int len = sizeof(address);
-    while (1)
-    {
-        if ((new_socket = accept(sockfd, (struct sockaddr *)&address, &len)) < 0)
-        {
-            printf("Server accept failed\n");
-            continue;
-        }
-        else
-        {
-            printf("Connection accpeted from client\n");
-        }
-        // function that takes care of further communication
-        communicate(new_socket);
-    }
 
+    listen:
+    if ((new_socket = accept(sockfd, (struct sockaddr *)&address, &len)) < 0)
+    {
+        printf("Server accept failed\n");
+    }
+    else
+    {
+        printf("Connection accpeted from client\n");
+    }
+    // function thread that takes care of further communication
+    int pid = fork();
+    if (pid == 0)
+        communicate(new_socket);
+    else
+    {
+        goto listen;
+    }
+    
+    
     // free the socket
     close(sockfd);
     
